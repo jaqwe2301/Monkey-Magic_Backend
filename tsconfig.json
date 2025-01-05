@@ -6,6 +6,7 @@
     "rootDir": "./src", //루트 폴더
     "strict": true, //strict 옵션 활성화
     "moduleResolution": "node", //모듈 해석 방법 설정: 'node' (Node.js)
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true // 라이브러리 타입 확인 비활성화 (필요시)
   }
 }
