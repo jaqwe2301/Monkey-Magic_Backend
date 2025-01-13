@@ -33,7 +33,7 @@ jobs:
       # 4. Docker 이미지 빌드
       - name: Build Docker Image
         run: |
-          docker build -t monkey-magic-docker .
+          docker build -t ${{ secrets.DOCKER_IMAGE_NAME }} .
 
       # 5. Docker Hub 로그인
       - name: Log in to Docker Hub
@@ -45,8 +45,8 @@ jobs:
       # 6. Docker 이미지 푸시
       - name: Push Docker Image to Docker Hub
         run: |
-          docker tag monkey-magic-docker ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/monkey-magic-docker:latest
+          docker tag ${{ secrets.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
       # 7. SSH를 통해 서버에 배포
       - name: Deploy to EC2
@@ -56,7 +56,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/monkey-magic-docker:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
             docker stop backend || true
             docker rm backend || true
-            docker run -d --name backend -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/monkey-magic-docker:latest
+            docker run -d --name backend -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
