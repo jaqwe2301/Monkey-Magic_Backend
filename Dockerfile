@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8000
 
 # 애플리케이션 실행
-CMD ["node", "server.js"]
+CMD ["node", "src/index.ts"]
