@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs", //어떤 모듈 방식으로 컴파일할지 설정
-    "outDir": "./dist", //컴파일 후 js 파일들이 생성되는 곳
+    "target": "ES6",
+    "module": "CommonJS", //어떤 모듈 방식으로 컴파일할지 설정
+    "outDir": "dist", //컴파일 후 js 파일들이 생성되는 곳
     "rootDir": "./src", //루트 폴더
     "strict": true, //strict 옵션 활성화
     "moduleResolution": "node", //모듈 해석 방법 설정: 'node' (Node.js)
     "esModuleInterop": true,
     "skipLibCheck": true // 라이브러리 타입 확인 비활성화 (필요시)
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
