@@ -29,6 +29,10 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
 // Routes
 app.use("/api/bookings", bookingsRoutes);
 
