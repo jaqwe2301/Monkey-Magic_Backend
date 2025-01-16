@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # 6. 포트 노출
-EXPOSE 8000
+EXPOSE 8001 8002
 
 # 7. JavaScript 파일 실행
 CMD ["node", "dist/index.js"]

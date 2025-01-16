@@ -7,7 +7,7 @@ import bookingsRoutes from "./routers/bookingsRoutes";
 import { votes } from "./models/vote";
 
 const app: Application = express();
-const PORT = 8000;
+const PORT = Number(process.env.PORT) || 8001;
 
 const httpServer = createServer(app);
 
@@ -29,8 +29,8 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
+app.get('/', (req, res) => {
+  res.status(200).send('OK');
 });
 
 // Routes
