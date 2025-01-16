@@ -7,7 +7,7 @@ import bookingsRoutes from "./routers/bookingsRoutes";
 import { votes } from "./models/vote";
 
 const app: Application = express();
-const PORT = Number(process.env.PORT) || 8001;
+const PORT = Number(process.env.PORT) || 8002;
 
 const httpServer = createServer(app);
 
