@@ -14,11 +14,11 @@ services:
     networks:
       - app-network
 
-  backend1:
+  backend_app1:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend1
+    container_name: backend_app1
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -30,11 +30,11 @@ services:
     networks:
       - app-network
 
-  backend2:
+  backend_app2:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend2
+    container_name: backend_app2
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -54,8 +54,8 @@ services:
     volumes:
       - ./nginx.conf:/home/ubuntu/nginx/nginx.conf:ro
     depends_on:
-      - backend1
-      - backend2
+      - backend_app1
+      - backend_app2
     networks:
       - app-network
 
