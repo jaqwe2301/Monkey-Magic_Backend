@@ -23,6 +23,7 @@ jspm_packages/
 
 # Next.js build output
 .next/
+dist/
 
 # Production
 out/
