@@ -1,8 +1,12 @@
-import { Router } from "express";
-import { vote } from "../controllers/voteController";
+import express from "express";
+import { vote, getVoteResults } from "../controllers/voteController";
 
-const voteRoutes = Router();
+const voteRouter = express.Router();
 
-voteRoutes.post("/vote", vote);
+// 투표 API
+voteRouter.post("/vote", vote);
 
-export default voteRoutes;
+// 결과 조회 API
+voteRouter.get("/votes", getVoteResults);
+
+export default voteRouter;

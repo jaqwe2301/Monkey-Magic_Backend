@@ -1,31 +1,40 @@
 import { Request, Response } from "express";
-import { VoteOption, Votes, VoteRequestBody } from "../types/vote";
-import { activeTokens, usedBookingNumbers, votes } from "../models/vote";
-import { io } from "../services/socketService";
+import { updateVotes, logVote, getVotes } from "../models/voteModel";
 
-// 투표 API 처리
-export const vote = (req: Request, res: Response) => {
-  const { token, option } = req.body as VoteRequestBody;
+// 투표 API
+export const vote = async (req: Request, res: Response): Promise<void> => {
+  const { userId, team1, team2 } = req.body;
 
-  // 토큰 유효성 검사
-  if (!activeTokens.has(token)) {
-    res.status(400).json({ message: "유효하지 않은 토큰입니다." });
+  if (!userId || !team1 || !team2) {
+    res.status(400).json({ message: "모든 필드를 입력해주세요." });
+    return;
   }
 
-  // 선택한 옵션이 유효한지 확인
-  if (!Object.keys(votes).includes(option)) {
-    res.status(400).json({ message: "유효하지 않은 투표 옵션입니다." });
+  if (team1 === team2) {
+    res.status(400).json({ message: "다른 두 팀을 선택해주세요." });
+    return;
   }
 
-  const bookingNumber = activeTokens.get(token)!;
+  try {
+    await updateVotes(team1, team2);
+    await logVote(userId, team1, team2);
+    res.status(200).json({ message: "투표가 완료되었습니다." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
 
-  // 투표 처리
-  votes[option as VoteOption] += 1; // 투표 수 증가
-  usedBookingNumbers.add(bookingNumber); // 예매번호 사용 완료
-  activeTokens.delete(token); // 토큰 제거
-
-  // 모든 클라이언트에 업데이트 전송
-  io.emit("update", votes);
-
-  res.status(200).json({ message: "투표가 완료되었습니다." });
+// 결과 조회 API
+export const getVoteResults = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const votes = await getVotes();
+    res.status(200).json({ votes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
 };
