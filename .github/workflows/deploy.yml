@@ -59,9 +59,5 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            docker stop backend_app1 || true
-            docker rm backend_app1 || true
-            docker stop backend_app2 || true
-            docker rm backend_app2 || true
-            docker run -d --name backend_app1 -p 8001:8001 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            docker run -d --name backend_app2 -p 8002:8002 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            docker-compose down || true
+            docker-compose up -d
