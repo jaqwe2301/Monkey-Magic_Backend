@@ -21,6 +21,8 @@ jobs:
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+          echo SOLAPI_KEY=${{ secrets.SOLAPI_KEY }} >> .env
+          echo SOLAPI_SECRET_KEY=${{ secrets.SOLAPI_SECRET_KEY }} >> .env
 
       # 3. Node.js 설치 및 종속성 설치
       - name: Set up Node.js
@@ -64,8 +66,3 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-           
-      # 9. Docker Compose 실행
-      - name: Deploy Containers
-        run: |
-          docker-compose --env-file .env up -d
