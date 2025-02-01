@@ -62,5 +62,5 @@ jobs:
             cd /home/ubuntu
             docker-compose down          # 기존 컨테이너 중지
             docker-compose pull          # 최신 이미지 가져오기
-            docker-compose up -d         # 최신 버전 실행
+            docker-compose up -d --build         # 최신 버전 실행
             docker system prune -f       # 불필요한 Docker 리소스 정리
