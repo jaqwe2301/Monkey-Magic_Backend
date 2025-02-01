@@ -32,13 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      # 4. Docker 설치 (docker-compose 포함)
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
-
+        
       # 5. Docker 이미지 빌드
       - name: Build Docker Image
         run: |
