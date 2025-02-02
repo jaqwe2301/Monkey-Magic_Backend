@@ -74,5 +74,9 @@ jobs:
             # 최신 이미지 가져오기
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
       
-            # 최신 컨테이너 실행
-            docker-compose up -d --build
+            # 최신 코드 가져오기
+            git pull origin main
+
+            # 최신 컨테이너 빌드 및 실행
+            docker-compose build --no-cache
+            docker-compose up -d --force-recreate

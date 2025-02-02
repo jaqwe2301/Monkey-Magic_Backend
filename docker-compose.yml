@@ -20,6 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: backend_app1
+    restart: always
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -36,6 +37,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: backend_app2
+    restart: always
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
