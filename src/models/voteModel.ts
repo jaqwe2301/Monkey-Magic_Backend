@@ -16,11 +16,11 @@ export const updateVotes = async (
   try {
     await client.query("BEGIN");
     await client.query(
-      "UPDATE votes SET vote_count = vote_count + 1 WHERE team_name = $1::text",
+      "UPDATE votes SET vote_count = vote_count + 1 WHERE team_name = $1",
       [team1]
     );
     await client.query(
-      "UPDATE votes SET vote_count = vote_count + 1 WHERE team_name = $1::text",
+      "UPDATE votes SET vote_count = vote_count + 1 WHERE team_name = $1",
       [team2]
     );
     await client.query("COMMIT");
