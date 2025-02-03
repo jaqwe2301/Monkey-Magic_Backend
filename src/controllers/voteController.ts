@@ -6,8 +6,7 @@ import {
   getVotes,
 } from "../models/voteModel";
 import { sendOtp, verifyOtp } from "../services/otpService";
-
-const verifiedUsers = new Map<string, number>(); // 인증된 사용자 및 만료 시간 저장
+import redis from "../db/redisClient.ts";
 
 // 🔹 인증번호 요청 API
 export const requestOtp = async (
@@ -55,20 +54,20 @@ export const verifyUserOtp = async (
     return;
   }
 
-  if (!verifyOtp(phoneNumber, otp)) {
+  if (!(await verifyOtp(phoneNumber, otp))) {
     res
       .status(400)
       .json({ message: "인증번호가 잘못되었거나 만료되었습니다." });
     return;
   }
 
-  // 인증된 사용자를 3분 동안 저장
-  verifiedUsers.set(phoneNumber, Date.now() + 3 * 60 * 1000);
+  // 인증된 사용자를 Redis에 3분 동안 저장
+  await redis.set(`verified:${phoneNumber}`, "true", "EX", 3 * 60);
 
   res.status(200).json({ message: "인증 성공! 3분 내에 투표해주세요." });
 };
 
-// 🔹 투표 API (3분 제한 추가)
+// 🔹 투표 API (Redis 적용)
 export const vote = async (req: Request, res: Response): Promise<void> => {
   const { phoneNumber, team1, team2 } = req.body;
 
@@ -82,10 +81,9 @@ export const vote = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // 인증 여부 확인 및 만료 체크
-  const expiresAt = verifiedUsers.get(phoneNumber);
-  if (!expiresAt || Date.now() > expiresAt) {
-    verifiedUsers.delete(phoneNumber);
+  // 인증 여부 확인 (Redis)
+  const isVerified = await redis.get(`verified:${phoneNumber}`);
+  if (!isVerified) {
     res
       .status(400)
       .json({ message: "인증이 만료되었습니다. 다시 인증해주세요." });
@@ -103,7 +101,7 @@ export const vote = async (req: Request, res: Response): Promise<void> => {
     await logVote(phoneNumber, team1, team2);
 
     // 투표 후 인증 만료
-    verifiedUsers.delete(phoneNumber);
+    await redis.del(`verified:${phoneNumber}`);
 
     res.status(200).json({ message: "투표가 완료되었습니다." });
   } catch (error) {

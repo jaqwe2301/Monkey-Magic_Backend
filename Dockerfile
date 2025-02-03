@@ -4,12 +4,14 @@ FROM node:16
 # 2. 작업 디렉토리 설정
 WORKDIR /usr/src/app
 
-# 3. 패키지 설치
+# 4. 패키지 설치
 COPY package.json package-lock.json* ./
 RUN npm install
 
-# 4. 전체 소스 코드 복사
-COPY . .
+
+# 3. 전체 소스 코드 복사
+COPY ./ ./
+
 
 # 5. TypeScript 빌드
 RUN npm run build

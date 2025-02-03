@@ -1,4 +1,5 @@
 import { SolapiMessageService } from "solapi";
+import redis from "../db/redisClient.ts";
 
 // Solapi 설정
 const messageService = new SolapiMessageService(
@@ -6,20 +7,18 @@ const messageService = new SolapiMessageService(
   process.env.SOLAPI_SECRET_KEY || ""
 );
 
-const otpStorage = new Map<string, { otp: string; expiresAt: number }>();
-
 // 인증번호 생성 함수
 export const generateOtp = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6자리 랜덤 숫자
 };
 
-// 인증번호 요청 함수
+// 인증번호 요청 함수 (Redis 적용)
 export const sendOtp = async (phoneNumber: string): Promise<void> => {
   const otp = generateOtp();
-  const expiresAt = Date.now() + 3 * 60 * 1000; // 3분 후 만료
+  const expiresAt = 3 * 60; // 3분 (초 단위)
 
-  // OTP 저장 (메모리 기반)
-  otpStorage.set(phoneNumber, { otp, expiresAt });
+  // Redis에 OTP 저장
+  await redis.set(`otp:${phoneNumber}`, otp, "EX", expiresAt);
 
   await messageService.send({
     to: phoneNumber,
@@ -30,18 +29,17 @@ export const sendOtp = async (phoneNumber: string): Promise<void> => {
   console.log(`OTP sent to ${phoneNumber}: ${otp}`);
 };
 
-// 인증번호 검증 함수
-export const verifyOtp = (phoneNumber: string, otp: string): boolean => {
-  const storedOtp = otpStorage.get(phoneNumber);
+// 인증번호 검증 함수 (Redis 적용)
+export const verifyOtp = async (
+  phoneNumber: string,
+  otp: string
+): Promise<boolean> => {
+  const storedOtp = await redis.get(`otp:${phoneNumber}`);
 
   if (!storedOtp) return false;
-  if (Date.now() > storedOtp.expiresAt) {
-    otpStorage.delete(phoneNumber); // 만료된 OTP 제거
-    return false;
-  }
-  if (storedOtp.otp !== otp) return false;
+  if (storedOtp !== otp) return false;
 
-  // 인증 성공 시 OTP 삭제
-  otpStorage.delete(phoneNumber);
+  // 인증 성공 후 OTP 삭제
+  await redis.del(`otp:${phoneNumber}`);
   return true;
 };
